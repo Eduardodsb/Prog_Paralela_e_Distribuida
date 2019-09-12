@@ -17,7 +17,6 @@ int *desloc, *cont_envia, salto=TAM_VET + 5;
             for (i = 0; i < (salto*num_procs); i++)
                 vet_envia[i] = i;
         }
-        
         /* Prepara os parametros para a chamada da rotina */
         desloc = (int *)malloc(num_procs*sizeof(int));
         cont_envia = (int *)malloc(num_procs*sizeof(int));

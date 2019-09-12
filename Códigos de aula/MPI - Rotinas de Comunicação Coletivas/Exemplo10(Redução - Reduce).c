@@ -18,7 +18,7 @@ MPI_Status estado;
         vet_envia[i] = (float) (meu_ranque*TAM+i);
 
     /* Faz a redução, encontrando o valor máximo do vetor */
-    MPI_Reduce(vet_envia, vet_recebe, TAM, MPI_FLOAT, MPI_NAX, raiz, MPI_COMM_WORLD); 
+    MPI_Reduce(vet_envia, vet_recebe, TAM, MPI_FLOAT, MPI_MAX, raiz, MPI_COMM_WORLD); 
     /*OBS: Essas operações são em relação a posição do vetor, de modo que pegará o max da posição 0, 1, 2 ...*/
     /* O processo raiz imprime o resultado da operação de redução */
     if (meu_ranque == raiz) { 
