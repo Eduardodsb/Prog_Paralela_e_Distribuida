@@ -35,7 +35,7 @@ int main(int argc, char *argv[]){
     MPI_Comm_rank(MPI_COMM_WORLD, &meu_ranque);
     MPI_Comm_size(MPI_COMM_WORLD, &num_procs);
 
-        TAMANHO = abs((n/num_procs) * 0.1);
+        TAMANHO = abs((n/(num_procs-1)) * 0.01);
 
     /*Se houver menos que dois processos aborta*/
     if(num_procs < 2){
