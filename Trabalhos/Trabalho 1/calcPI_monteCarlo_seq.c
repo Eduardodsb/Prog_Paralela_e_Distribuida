@@ -4,7 +4,7 @@ Licença MIT
 _______________________________________________________________________________________________________
 Cálculo do PI - Método de Monte Carlo sequêncial.
 
-Compilar: mpicc -o calcPI_monteCarlo calcPI_monteCarlo.c  -lm
+Compilar: mpicc -o calcPI_monteCarlo_seq calcPI_monteCarlo_seq.c  -lm
 Executar: mpirun -np 1 ./calcPI_monteCarlo 100000000
 
 OBS1: DEVE SER EXECUTADO COM APENAS UM PROCESSO, POIS É SEQUÊNCIAL.

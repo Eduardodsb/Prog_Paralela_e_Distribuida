@@ -1,7 +1,7 @@
 /*
 Cálculo do PI - Método do Trapézio (Integral) sequêncial.
 
-Compilar: mpicc -o calcPI_integral calcPI_integral.c -lm
+Compilar: mpicc -o calcPI_integral_seq calcPI_integral_seq.c -lm
 Executar: mpirun -np 1 ./calcPI_integral 100000000
 
 OBS1: DEVE SER EXECUTADO COM APENAS UM PROCESSO, POIS É SEQUÊNCIAL.
