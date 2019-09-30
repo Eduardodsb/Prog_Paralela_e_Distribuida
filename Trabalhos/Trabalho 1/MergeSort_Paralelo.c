@@ -1,8 +1,8 @@
 /*
-Ordena Vetor - Código Paralelo.
+MergeSort_Paralelo - Código Paralelo.
 
-Compilar: mpicc -o ordena_para ordena_para.c -lm
-Executar: mpirun -np 8 ./ordena_para 16000000
+Compilar: mpicc -o MergeSort_Paralelo MergeSort_Paralelo.c -lm
+Executar: mpirun -np 8 ./MergeSort_Paralelo 64000000
 
 OBS1: O número de processos deve ser potência de 2.
 OBS2: O argumento pode ser alterado, o mesmo representa o tamanho do vetor.  
