@@ -15,9 +15,9 @@ OBS2: O argumento pode ser alterado, o mesmo representa o número de intervalos.
 
 int main (int argc, char **argv){ 
 double t_inicial, t_final;
-int n, i, meu_ranque, num_procs, raiz = 0;
+int  meu_ranque, num_procs, raiz = 0;
 double  pi, h, x, sum, minha_sum = 0.0;
-    
+unsigned long int n, i;    
 
     MPI_Init(&argc, &argv);
     MPI_Comm_rank(MPI_COMM_WORLD, &meu_ranque);
@@ -29,14 +29,14 @@ double  pi, h, x, sum, minha_sum = 0.0;
             exit(-1);
         }
 
-        if (sscanf(argv[1], "%d", &n) != 1){  /*n é fornecido como segundo argumento*/
+        if (sscanf(argv[1], "%ld", &n) != 1){  /*n é fornecido como segundo argumento*/
             exit(-1);
         }
     }
 
     t_inicial = MPI_Wtime();
 
-    MPI_Bcast(&n, 1, MPI_INT, raiz, MPI_COMM_WORLD);
+    MPI_Bcast(&n, 1, MPI_LONG, raiz, MPI_COMM_WORLD);
 
 	if (n != 0){ 
     	h=1.0/ (double) n;

@@ -2,7 +2,7 @@
 Cálculo do PI - Método do Trapézio (Integral) sequêncial.
 
 Compilar: mpicc -o calcPI_integral_seq calcPI_integral_seq.c -lm
-Executar: mpirun -np 1 ./calcPI_integral 100000000
+Executar: mpirun -np 1 ./calcPI_integral_seq 100000000
 
 OBS1: DEVE SER EXECUTADO COM APENAS UM PROCESSO, POIS É SEQUÊNCIAL.
 OBS2: O argumento pode ser alterado, o mesmo representa o número de intervalos. 
@@ -15,7 +15,7 @@ OBS2: O argumento pode ser alterado, o mesmo representa o número de intervalos.
 
 int main (int argc, char **argv){
 double t_inicial, t_final; 
-int n, i, rc;
+unsigned long int n, i;
 double  pi, h, x, sum = 0.0;
     
 	if(argc != 2){
@@ -23,7 +23,7 @@ double  pi, h, x, sum = 0.0;
 		exit(-1);
 	}
 
-	if (sscanf(argv[1], "%d", &n) != 1){  /*n é fornecido como segundo argumento */
+	if (sscanf(argv[1], "%ld", &n) != 1){  /*n é fornecido como segundo argumento */
    		/* 	Erro  */
    		exit(-1);
 

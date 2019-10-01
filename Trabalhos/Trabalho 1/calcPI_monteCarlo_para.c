@@ -1,7 +1,7 @@
 /*
 Cálculo do PI - Método de Monte Carlo paralelo.
 
-Compilar: mpicc -o calcPI_monteCarlo_para calcPI_monteCarlo_para.c   -lm
+Compilar: mpicc -o calcPI_monteCarlo_para calcPI_monteCarlo_para.c -lm
 Executar: mpirun -np 8 ./calcPI_monteCarlo_para 100000000
 
 OBS1: Pode ser alterado o número de processos.
@@ -18,7 +18,8 @@ OBS2: O argumento pode ser alterado, o mesmo representa o número de intervalos.
 
 int main(int argc, char **argv) {
 double t_inicial, t_final; 
-int i, count, n, count_total, meu_ranque, num_procs, raiz = 0;
+int meu_ranque, num_procs, raiz = 0;
+unsigned long int i, count, n, count_total;
 double x,y,z,pi;
 srand( SEED );
 
@@ -34,13 +35,14 @@ srand( SEED );
             exit(-1);
         }
 
-        if (sscanf(argv[1], "%d", &n) != 1){  /*n é fornecido como segundo argumento*/
+        if (sscanf(argv[1], "%ld", &n) != 1){  /*n é fornecido como segundo argumento*/
             exit(-1);
         }
+        
     }
 
     t_inicial = MPI_Wtime();
-    MPI_Bcast(&n, 1, MPI_INT, raiz, MPI_COMM_WORLD);
+    MPI_Bcast(&n, 1, MPI_LONG, raiz, MPI_COMM_WORLD);
 
     for(i = meu_ranque; i < n; i+=num_procs) {
         x = (double)rand() / RAND_MAX;
@@ -49,7 +51,7 @@ srand( SEED );
         if( z <= 1 ) count++;
     }
 
-    MPI_Reduce(&count,&count_total, 1, MPI_INT, MPI_SUM, raiz, MPI_COMM_WORLD); 
+    MPI_Reduce(&count,&count_total, 1, MPI_LONG, MPI_SUM, raiz, MPI_COMM_WORLD); 
     t_final = MPI_Wtime();
 
     if(meu_ranque == raiz){
