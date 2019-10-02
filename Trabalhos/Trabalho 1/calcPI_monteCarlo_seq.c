@@ -5,10 +5,10 @@ ________________________________________________________________________________
 Cálculo do PI - Método de Monte Carlo sequêncial.
 
 Compilar: mpicc -o calcPI_monteCarlo_seq calcPI_monteCarlo_seq.c  -lm
-Executar: mpirun -np 1 ./calcPI_monteCarlo_seq 100000000
+Executar: mpirun -np 1 ./calcPI_monteCarlo_seq
 
 OBS1: DEVE SER EXECUTADO COM APENAS UM PROCESSO, POIS É SEQUÊNCIAL.
-OBS2: O argumento pode ser alterado, o mesmo representa o número de intervalos.  
+OBS2: A variável n pode ser alterada, a mesma representa o número de experimentos.  
 */
 
 #include <stdio.h>
@@ -21,7 +21,7 @@ OBS2: O argumento pode ser alterado, o mesmo representa o número de intervalos.
 
 int main() {
 double t_inicial, t_final; 
-unsigned long int i, count, n=10000000000;
+unsigned long int i, count, n=100000000;
 double x,y,z,pi;
 srand( SEED );
 

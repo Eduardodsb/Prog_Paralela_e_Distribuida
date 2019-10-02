@@ -5,7 +5,7 @@ Compilar: mpicc -o calcPI_monteCarlo_para calcPI_monteCarlo_para.c -lm
 Executar: mpirun -np 8 ./calcPI_monteCarlo_para 100000000
 
 OBS1: Pode ser alterado o número de processos.
-OBS2: O argumento pode ser alterado, o mesmo representa o número de intervalos.  
+OBS2: O argumento pode ser alterado, o mesmo representa o o número de experimentos.  
 */
 
 #include <stdio.h>
