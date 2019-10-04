@@ -10,8 +10,8 @@
 #include <math.h>
 #include "mpi.h"
 
-#define		X_RESN	800       /* x resolution */
-#define		Y_RESN	800       /* y resolution */
+#define		X_RESN	1000       /* x resolution */
+#define		Y_RESN	1000      /* y resolution */
 
 typedef struct complextype
 	{
@@ -38,7 +38,7 @@ int main(int argc, char **argv) {
 	unsigned
 	long		valuemask = 0;
 	XGCValues	values;
-	XColor    red;
+	XColor    color_blue;
 	Display		*display;
 	XSizeHints	size_hints;
 	Pixmap		bitmap;
@@ -104,10 +104,10 @@ int main(int argc, char **argv) {
         gc = XCreateGC (display, win, valuemask, &values);
         
         screen_colormap = DefaultColormap(display, DefaultScreen(display));
-        XAllocNamedColor(display, screen_colormap, "blue", &red, &red);
+        XAllocNamedColor(display, screen_colormap, "blue", &color_blue, &color_blue);
 
         XSetBackground (display, gc, WhitePixel (display, screen));
-        XSetForeground (display, gc, red.pixel);
+        XSetForeground (display, gc, color_blue.pixel);
         XSetLineAttributes (display, gc, 1, LineSolid, CapRound, JoinRound);
 
         attr[0].backing_store = Always;
@@ -129,8 +129,8 @@ int main(int argc, char **argv) {
             for(j=0; j < Y_RESN; j++) {
 
                 z.real = z.imag = 0.0;
-                c.real = ((float) j - 400.0)/200.0;               /* scale factors for 800 x 800 window */
-                c.imag = ((float) i - 400.0)/200.0;
+                c.real = ((float) j - 500.0)/250.0;               /* scale factors for 1000 x 1000 window */
+                c.imag = ((float) i - 500.0)/250.0;
                 k = 0;
 
                 do {                                             /* iterate for pixel color */
@@ -147,6 +147,7 @@ int main(int argc, char **argv) {
                 quantidade_msg++;
                 point[0] = j;
                 point[1] = i;
+                //printf("Eu %d fiz o ponto (%d,%d)\n", meu_ranque,j, i);
                 MPI_Isend(point, 2, MPI_INT, raiz, etiq, MPI_COMM_WORLD, &pedido_envia);
             } 
 
@@ -155,16 +156,19 @@ int main(int argc, char **argv) {
     //Finaliza a contagem do tempo de execução da ordenação. OBS: O tempo considerado é o do processo 0, pois o mesmo é o processo raiz da árvore. 
     t_final = MPI_Wtime();
 
+
     MPI_Reduce(&quantidade_msg,&soma_quantidade_msg, 1, MPI_INT, MPI_SUM, raiz, MPI_COMM_WORLD); 
-    
+
     if(meu_ranque == raiz){
         printf ("Tempo de execução %.5f\n", t_final - t_inicial);
+        //printf("total msg %d\n", soma_quantidade_msg);
         for(i = 0; i < soma_quantidade_msg; i++){
-            MPI_Recv(point, 2, MPI_INT, MPI_ANY_SOURCE, MPI_ANY_TAG, MPI_COMM_WORLD, &info);
-            sleep(0.00001);
+           MPI_Recv(point, 2, MPI_INT, MPI_ANY_SOURCE, MPI_ANY_TAG, MPI_COMM_WORLD, &info);
+            //printf("imprime o ponto (%d,%d)\n",point[0] ,point[1] );
             XDrawPoint (display, win, gc, point[0], point[1]);
+            XFlush(display);               
         }
-        XFlush (display);
+        XFlush(display);
         sleep (5);
     }
     

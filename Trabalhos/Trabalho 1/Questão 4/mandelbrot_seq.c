@@ -8,6 +8,7 @@
 #include <stdio.h>
 #include <string.h>
 #include <math.h>
+#include "mpi.h"
 
 #define		X_RESN	800       /* x resolution */
 #define		Y_RESN	800       /* y resolution */
@@ -19,6 +20,7 @@ typedef struct complextype
 
 
 int main (){
+double t_inicial, t_final; /*Variáveis utilizadas para cálculo de tempo de execução*/
 	Window		win;                            /* initialization for a window */
 	unsigned
 	int             width, height,                  /* window size */
@@ -106,7 +108,10 @@ int main (){
 
 	XMapWindow (display, win);
 	XSync(display, 0);
-      	 
+
+    //Inicia a contagem do tempo de execução da ordenação.
+    t_inicial = MPI_Wtime();
+
        /* Calculate and draw points */
 
         for(i=0; i < X_RESN; i++){ 
@@ -128,15 +133,19 @@ int main (){
 				}while(lengthsq < 4.0 && k < 100);
 
 			if (k == 100){
-				sleep(0.0001);
+				sleep(0.000001);
 				XDrawPoint (display, win, gc, j, i);
-				}
+			}
 
 			}
 	}
+
+	//Finaliza a contagem do tempo.
+	t_final = MPI_Wtime();
+	printf ("Tempo de execução %.5f\n", t_final - t_inicial);
 	 
 	XFlush (display);
-	sleep (30);
+	sleep (5);
 	return 0;
 
 	/* Program Finished */
