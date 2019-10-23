@@ -10,8 +10,8 @@ int main(int argc, char *argv[]) {
    for (i=0; i<n; i++)    
           a[i] = i;
 #pragma omp parallel
-   {
-      #pragma omp single
+   { /*#pragma omp master*/ /*Indica que um bloco seve ser executado apenas pela thread master (thread 0). OBS: Outras threads pulam o bloco e continuam a execução: é diferente da diretiva single neste aspecto. */
+      #pragma omp single /*A primeira thread que chegar nesse ponto executará o trecho de código a baixo sozinha. OBS: As demais threads esperam pela thread que está executando o bloco, para todas prosseguirem juntas.*/
           printf("Número de threads é %d\n", omp_get_num_threads());
    }
  sum = SUM_INIT;

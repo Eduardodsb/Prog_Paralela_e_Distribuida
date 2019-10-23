@@ -1,3 +1,8 @@
+/*
+- Single ao final do escopo todas as threads aguardam para prosseguirem juntas.
+- Master ninguém espera a thread master terminar o escopo.
+*/
+
 #include <stdio.h>  
 #include <omp.h>  
 void test(int val)  {  

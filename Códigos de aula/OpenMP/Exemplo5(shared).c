@@ -8,7 +8,7 @@ int main(int argc, char *argv[]) {
    (void) omp_set_num_threads(4);
    for (i=0; i<n; i++)
             a[i] = i+1;
-   #pragma omp parallel for shared(a)
+   #pragma omp parallel for shared(a) /*Divide o for igualmente para cada thread executar um intervalo.*/
    for (i=0; i<n; i++)  {
        a[i] += i;
    } /*-- End of parallel for --*/
