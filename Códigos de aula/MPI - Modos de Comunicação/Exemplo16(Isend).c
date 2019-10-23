@@ -26,7 +26,7 @@ MPI_Request pedido_recebe;
            printf("Por favor execute com número de processos potencia de 2 \n");
         MPI_Finalize();
         exit(0);
-        }
+    }
     /* Cada processo tem um valor diferente para a redução */
     meu_valor = meu_ranque*num_procs;
     reducao = meu_valor;
