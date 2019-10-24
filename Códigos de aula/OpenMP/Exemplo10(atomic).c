@@ -1,5 +1,9 @@
-
 // OpenMP example program: atomic
+
+/*
+Usada para proteger uma atualização única para uma variável compartilhada.
+Aplica-se apenas a uma única sentença. 
+*/
 
 #include <stdio.h>
 #include <omp.h>
