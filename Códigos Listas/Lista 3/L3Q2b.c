@@ -5,10 +5,10 @@
 #define MAXSIZE 65536
 
 int main(int argc, char *argv[]){
-    int my_rank, p, successor, predecessor, a ;
-    int vetor[MAXSIZE], i, tam_buffer;
+    int my_rank, p, successor, predecessor;
+    int i, tam_buffer;
     void *buffer;
-
+    float a, vetor[MAXSIZE];
 
     MPI_Status estado;
     MPI_Request pedido_envia, pedido_recebe;
@@ -21,7 +21,7 @@ int main(int argc, char *argv[]){
         vetor[i] = my_rank;    
     a = my_rank;
 
-    MPI_Pack_size(MAXSIZE * 2 + 2 , MPI_INT, MPI_COMM_WORLD, &tam_buffer);
+    MPI_Pack_size(MAXSIZE * 2 + 2 , MPI_FLOAT, MPI_COMM_WORLD, &tam_buffer);
     tam_buffer = tam_buffer + 2*MPI_BSEND_OVERHEAD;
     buffer = (void *) malloc(tam_buffer);
 
@@ -35,7 +35,7 @@ int main(int argc, char *argv[]){
     MPI_Recv(&a, 1, MPI_FLOAT, predecessor, 1, MPI_COMM_WORLD, &estado);
     MPI_Recv(vetor, MAXSIZE, MPI_FLOAT, predecessor, 1,MPI_COMM_WORLD, &estado);
 
-    printf("Eu processo %d recebi a = %d e vetor[0] = %d\n", my_rank, a, vetor[0]);
+    printf("Eu processo %d recebi a = %f e vetor[0] = %f\n", my_rank, a, vetor[0]);
 
     MPI_Finalize();
     return 0;

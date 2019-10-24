@@ -4,8 +4,8 @@
 #define MAXSIZE 65536
 
 int main(int argc, char *argv[]){
-    int my_rank, p, successor, predecessor, a ;
-    int vetor[MAXSIZE], i;
+    int my_rank, p, successor, predecessor, i;
+    float vetor[MAXSIZE], a;
     MPI_Status estado;
     MPI_Request pedido_envia, pedido_recebe;
 
@@ -31,7 +31,7 @@ int main(int argc, char *argv[]){
     MPI_Wait(&pedido_envia,&estado);
     MPI_Wait(&pedido_recebe,&estado);
 
-    printf("Eu processo %d recebi a = %d e vetor[0] = %d\n", my_rank, a, vetor[0]);
+    printf("Eu processo %d recebi a = %f e vetor[0] = %f\n", my_rank, a, vetor[0]);
 
     MPI_Finalize();
     return 0;
