@@ -1,3 +1,8 @@
+/*
+Compilar:  gcc -o L3Q13 L3Q13.c -ansi -Wall -fopenmp -lm
+Executar: ./L3Q13 4 1000000
+*/
+
 #include<stdio.h>
 #include<stdlib.h>
 #include<math.h>
@@ -6,7 +11,7 @@
 int primo (int n);
 
 int main(int argc, char *argv[]){
-    int n, i, total = 1, num_threads = 1; //Total é igual a 1 para considerar o 2.    
+    int n, i, total = 1, num_threads = 1; /*Total é igual a 1 para considerar o 2.*/    
     double tempo_inicial, tempo_final;
 
     if (argc < 2) {
