@@ -1,6 +1,7 @@
 /*
-Compilar: gcc -o Q3 Q3.c -ansi -Wall -fopenmp -lm
-Executar: ./Q3 4 10000
+Versão: Não recursivo
+Compilar: gcc -o Q3_NRec Q3_NRec.c -ansi -Wall -fopenmp -lm
+Executar: ./Q3_NRec 4 10000
 */
 
 #include <omp.h>
@@ -46,25 +47,25 @@ int encontraPrimos(int *vetor, int tam){
     int i, j, totalPrimos = 0;
 
     for(i = 2; i < (int)(sqrt(tam) + 1);){
-       /*#pragma omp parallel for shared(tam, vetor, i) private(j) reduction(+:totalNaoPrimos)*/
+    /*#pragma omp parallel for shared(tam, vetor, i) private(j) reduction(+:totalNaoPrimos)*/
         #pragma omp parallel shared(tam, vetor, i) private(j)
-    {
-        #pragma omp single
         {
-        #pragma omp taskloop
-            for(j=i+1; j < tam; j++){
-                if(j%i == 0){
-                    vetor[j] = 1;
-                }
-            }
+            #pragma omp single
+            {
+                #pragma omp taskloop
+                    for(j=i+1; j < tam; j++){
+                        if(j%i == 0){
+                            vetor[j] = 1;
+                        }
+                    }
 
-            j=i+1;
-            while(vetor[j] != 0)
-                j++;
-            i = j;
-            
+                j=i+1;
+                while(vetor[j] != 0)
+                    j++;
+                i = j;
+                
+            }
         }
-    }
     }
 
     for(i = 0; i < tam; i++)
