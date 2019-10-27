@@ -84,5 +84,5 @@ int encontraPrimos(int *vetor, int tam){
         if(vetor[i] == 0)
             totalPrimos++;
 
-    return totalPrimos - 2;
+    return totalPrimos - 2; /*Desconsidera a posição 0 e 1*/
 }
