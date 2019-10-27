@@ -43,22 +43,33 @@ void inicializa(int *vetor, int tam){
 }
 
 int encontraPrimos(int *vetor, int tam){
-    int i, j, totalNaoPrimos = 0;
-    for(i = 2; i < (int)(sqrt(tam) + 1);){
-        for(j=i+1; j < tam; j++){
-            if(j%i == 0){
-                if(vetor[j] == 0)
-                    totalNaoPrimos++;
-                vetor[j] = 1;
-            }
-        }
+    int i, j, totalPrimos = 0;
 
-        j=i+1;
-        while(vetor[j] != 0)
-            j++;
-        i = j;
-        
+    for(i = 2; i < (int)(sqrt(tam) + 1);){
+       /*#pragma omp parallel for shared(tam, vetor, i) private(j) reduction(+:totalNaoPrimos)*/
+        #pragma omp parallel shared(tam, vetor, i) private(j)
+    {
+        #pragma omp single
+        {
+        #pragma omp taskloop
+            for(j=i+1; j < tam; j++){
+                if(j%i == 0){
+                    vetor[j] = 1;
+                }
+            }
+
+            j=i+1;
+            while(vetor[j] != 0)
+                j++;
+            i = j;
+            
+        }
+    }
     }
 
-    return tam - (totalNaoPrimos+2);
+    for(i = 0; i < tam; i++)
+        if(vetor[i] == 0)
+            totalPrimos++;
+
+    return totalPrimos - 2;
 }
