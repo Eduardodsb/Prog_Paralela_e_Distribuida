@@ -3,7 +3,7 @@
 Trabalhos realizados na disciplina de Programação Paralela e Distribuida em 2019.2. Tal disciplina tem como foco a aprendizagem de MPI, OpenMP e OpenACC e a mesma foi lecionada pelo professor Gabriel Pereira.
 
 
-## Requisítos necessários:
+## MPI - Requisítos necessários:
 
 ### - Ambiente linux:
 * Bibliotecas do MPI
@@ -29,3 +29,10 @@ obs: 4 representa o número de threads
 https://www.microsoft.com/en-us/download/details.aspx?id=57467
 
 É necessário incluir a biblioteca no Visual Studio (https://blogs.technet.microsoft.com/windowshpc/2015/02/02/how-to-compile-and-run-a-simple-ms-mpi-program/)
+
+
+## OpenMP - Requisítos necessários
+
+#### comando para compilar e executar:<br>
+$ gcc -o CodName CodName.c -fopenmp <br>
+$ ./CodName
