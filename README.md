@@ -9,16 +9,16 @@ Trabalhos realizados na disciplina de Programação Paralela e Distribuida em 20
 * Bibliotecas do MPI
 
 #### comando para instalar o OpenMPI:<br>
-
+```
 $ sudo apt-get install openmpi-bin<br>
 $ sudo apt-get install openmpi-doc<br>
 $ sudo apt-get install libopenmpi-dev<br>
-
+```
 #### comando para compilar e executar:<br>
-
+```
 $ mpicc -o CodName CodName.c <br>
 $ mpirun -np 4 ./CodName
-
+```
 obs: 4 representa o número de threads
 
 ### - Ambiente Windows:
@@ -34,5 +34,7 @@ https://www.microsoft.com/en-us/download/details.aspx?id=57467
 ## OpenMP - Requisítos necessários
 
 #### comando para compilar e executar:<br>
+```
 $ gcc -o CodName CodName.c -fopenmp <br>
 $ ./CodName
+```
