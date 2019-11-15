@@ -49,20 +49,24 @@ int main(int argc, char * argv[]){
 
 void sor(void){
     int i, j, k;
-    for(k=0; k < M; k++){
-        #pragma omp parallel shared(mat, temp) private(i, j)
+    #pragma omp parallel shared(mat, temp) private(i, j)
+    {
+        #pragma omp single
         {
-            #pragma omp single
-            {
-                #pragma omp taskloop
-                for(i=1; i<TAM-1; i++){
-                    for(j=1; j<TAM-1; j++){
-                        temp[i][j] = 0.25*(mat[i-1][j] + mat[i+1][j] + mat[i][j-1] + mat[i][j+1]);
+            for(k=0; k < M; k++){
+                #pragma omp taskgroup
+                {
+                    #pragma omp taskloop
+                    for(i=1; i<TAM-1; i++){
+                        for(j=1; j<TAM-1; j++){
+                            temp[i][j] = 0.25*(mat[i-1][j] + mat[i+1][j] + mat[i][j-1] + mat[i][j+1]);
+                        }
                     }
                 }
+                //#pragma omp taskwait
+                memcpy(mat, temp, sizeof(mat));
             }
-            #pragma omp barrier
-            memcpy(mat, temp, sizeof(mat));
+            //#pragma omp barrier
         }
     }
 }
