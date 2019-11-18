@@ -1,7 +1,8 @@
 /*
-Compilar: gcc -o Trab3_SemOtimizacao Trab3_SemOtimizacao.c -fopenmp
-Executar: ./Trab3_SemOtimizacao 1024
-OBS: 1024 representa o tamanho da matriz.
+Compilar gcc: gcc -o Trab3_SemOtimizacao Trab3_SemOtimizacao.c -fopenmp
+Compilar PGI: pgcc -mp -Minfo=all -o Trab3_SemOtimizacao Trab3_SemOtimizacao.c 
+Executar: ./Trab3_SemOtimizacao 2000
+OBS: 2000 representa o tamanho da matriz.
 */
 
 #include<stdio.h>
