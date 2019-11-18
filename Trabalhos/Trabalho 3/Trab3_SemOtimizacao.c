@@ -1,16 +1,28 @@
+/*
+Compilar: gcc -o Trab3_SemOtimizacao Trab3_SemOtimizacao.c -fopenmp
+Executar: ./Trab3_SemOtimizacao 1024
+OBS: 1024 representa o tamanho da matriz.
+*/
+
 #include<stdio.h>
 #include<stdlib.h>
 #include<time.h>
 #include<omp.h>
 
-#define N 1024
-
 int main(int argc, char *argv[]){
-    int i,j,k;
+    int i,j,k,N;
     double **a, **b, **c; 
     double t_final, t_inicial;
 
     srand(time(NULL));
+
+    if(argc < 2){
+        perror("Número de argumentos insuficiente, insira a dimensão da matriz quadrada");
+        return 0;
+    }else{
+        N = atoi(argv[1]);
+    }
+
 
     /*Alocação da Matrizes*/    
     a = (double**) malloc(sizeof(double*)*N);

@@ -1,5 +1,7 @@
 /*
 Compilar: gcc -o Trab3_Otimizado Trab3_Otimizado.c -fopenmp -O3
+Executar: ./Trab3_Otimizado 1024 8
+OBS: 1024 representa o tamanho da matriz e o 8 Block Size.
 */
 
 #include<stdio.h>
@@ -7,17 +9,24 @@ Compilar: gcc -o Trab3_Otimizado Trab3_Otimizado.c -fopenmp -O3
 #include<time.h>
 #include<omp.h>
 
-#define N 1024
-#define BLOCK_SIZE 8
-
 int main(int argc, char *argv[]){
-    int i,j,k;
+    int i,j,k, N, BLOCK_SIZE, m,r,p;
     double *a, *b, *c; 
     double t_final, t_inicial;
-    int sum = 0; /*Variável temporária para manter em registrador o valor acumulado para cálculo de C[i][j]*/
-    int num = N/BLOCK_SIZE;
+    double sum = 0; /*Variável temporária para manter em registrador o valor acumulado para cálculo de C[i][j]*/
+    int num;
 
     srand(time(NULL));
+
+    if(argc < 3){
+        perror("Número de argumentos insuficiente, insira a dimensão da matriz quadrada e o block size");
+        return 0;
+    }else{
+        N = atoi(argv[1]);
+        BLOCK_SIZE = atoi(argv[2]);
+    }
+
+    num = N/BLOCK_SIZE;
 
     /*Alocação da Matrizes*/    
     a = (double*) malloc(sizeof(double)*N*N);
@@ -37,15 +46,24 @@ int main(int argc, char *argv[]){
     
     t_inicial = omp_get_wtime();
 
-    for(i=0; i<N; i++){
-        for (j=0; j<N; j++){
-            for (k=0; k<N; k++){
-                //sum += a[i*N+k] * b[k*N+j];
-                //sum += *(a + (i*N+k)) * *(b + (k*N+j)); /*Para b não transposto*/
-                sum += *(a + (i*N+k)) * *(b + (j*N+k)); /*Para b transposto*/
+    for(i=0; i<num; i++){
+        for (j=0; j<num; j++){
+            for (k=0; k<BLOCK_SIZE; k++){
+                for(m=0; m<BLOCK_SIZE; m++){
+                    sum = 0.0;
+                    for(r=0;r<num;r++){
+                        for(p=0; p<BLOCK_SIZE; p++){
+                            //sum += a[i*N+k] * b[k*N+j];
+                            //sum += *(a + (i*N+k)) * *(b + (k*N+j)); /*Para b não transposto*/
+                            //sum += *(a + (i*N+k)) * *(b + (j*N+k)); /*Para b transposto*/
+                            sum += *(a + (i*BLOCK_SIZE*N+ r*BLOCK_SIZE +k*N + p)) * *(b + (j*BLOCK_SIZE*N+r*BLOCK_SIZE+m*N+p)); /*Blocagem*/
+                        }
+                    }
+                    *(c+(i*BLOCK_SIZE*N+j*BLOCK_SIZE+k*N+m)) = sum;
+                }
             }
             //c[i*N+j] = sum;
-            *(c+(i*N+j)) = sum;
+            //*(c+(i*N+j)) = sum;
         }
     }   
     t_final = omp_get_wtime();
