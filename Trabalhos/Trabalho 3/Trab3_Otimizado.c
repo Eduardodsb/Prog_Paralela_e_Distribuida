@@ -8,12 +8,14 @@ Compilar: gcc -o Trab3_Otimizado Trab3_Otimizado.c -fopenmp -O3
 #include<omp.h>
 
 #define N 1024
+#define BLOCK_SIZE 8
 
 int main(int argc, char *argv[]){
     int i,j,k;
     double *a, *b, *c; 
     double t_final, t_inicial;
     int sum = 0; /*Variável temporária para manter em registrador o valor acumulado para cálculo de C[i][j]*/
+    int num = N/BLOCK_SIZE;
 
     srand(time(NULL));
 
