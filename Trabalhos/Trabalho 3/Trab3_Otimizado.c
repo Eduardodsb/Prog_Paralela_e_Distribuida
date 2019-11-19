@@ -1,6 +1,7 @@
 /*
 Compilar gcc: gcc -o Trab3_Otimizado Trab3_Otimizado.c -fopenmp -O3
 Compilar PGI: pgcc -mp -Minfo=all -o Trab3_Otimizado Trab3_Otimizado.c -O3
+Compilar icc: icc -o Trab3_Otimizado Trab3_Otimizado.c -openmp
 Executar: ./Trab3_Otimizado 2000 1024
 OBS: 2000 representa o tamanho da matriz quadrada e o 1024 Block Size.
 */
