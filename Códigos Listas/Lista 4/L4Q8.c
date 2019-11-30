@@ -1,5 +1,7 @@
 #include <stdlib.h>
+#include <stdio.h>
 
+/*
 int main(int argc, char** argv){
     float A[1000];
     #pragma acc kernels
@@ -8,8 +10,8 @@ int main(int argc, char** argv){
     }
     A[10] = 2.0;
     printf("A[10] = %f\n", A[10]);
-}
-/*
+}*/
+
 #include <stdlib.h>
 int main(int argc, char** argv){
     float A[1000];
@@ -22,4 +24,4 @@ int main(int argc, char** argv){
         A[10] = 2.0;
     }
     printf("A[10] = %f\n", A[10]);
-}*/
+}
