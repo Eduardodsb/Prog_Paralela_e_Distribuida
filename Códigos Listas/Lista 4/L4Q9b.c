@@ -1,5 +1,6 @@
 #include <stdio.h>
-#define SIZE 5000
+#include <omp.h>
+#define SIZE 20000
 
 float a[SIZE][SIZE];
 float b[SIZE][SIZE];
@@ -21,7 +22,7 @@ int main() {
     #pragma acc data create(c) copyin(a,b)
     {
         //#pragma acc kernels
-        #pragma acc parallel loop collapse(2)
+        #pragma acc parallel loop
         for (i = 0; i < SIZE; ++i) {
             for (j = 0; j < SIZE; ++j) {
                 c[i][j] = a[i][j] + b[i][j];
@@ -29,6 +30,8 @@ int main() {
         }
     }
     t_final = omp_get_wtime();
+
+    printf("Tempo de execução %lf\n", t_final-t_inicial);
     
     return 0;
 }

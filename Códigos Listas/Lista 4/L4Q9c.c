@@ -1,5 +1,6 @@
 #include <stdio.h>
-#define SIZE 5000
+#include <omp.h>
+#define SIZE 20000
 
 float a[SIZE][SIZE];
 float b[SIZE][SIZE];
@@ -30,5 +31,7 @@ int main() {
     }
     t_final = omp_get_wtime();
     
+    printf("Tempo de execução %lf\n", t_final-t_inicial);
+
     return 0;
 }
