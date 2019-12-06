@@ -1,6 +1,13 @@
+/*
+Compilar PGI: pgcc -mp -Minfo=all -o Trab3_Strassen Trab3_Strassen.c
+
+Executar: ./Trab3_Otimizado 2000 1000
+OBS: 2000 representa o tamanho da matriz quadrada e o 1000 Block Size.
+*/
+
 #include<stdio.h>
 #include<stdlib.h>
-#include<time.h>
+#include<omp.h>
 
 int** alocarMatriz(int Tam);
 void geraMatriz(int **M, int Tam);
@@ -12,34 +19,32 @@ void algoritmoDeStrassen(int **A, int **B, int **D, int Tam);
 void liberamemoria(int **A, int Tam);
 
 int main (int argc, char *argv[]){
-  int Tamanho = atoi(argv[1]); /*Converto o argumento recebido pela main em inteiro*/
+  int Tamanho = atoi(argv[1]);
+  double t_final, t_inicial;
+
   /*Aloco as Matrizes necessárias, onde A e B são meus operandos e C e D para guardar os resultados*/
   int **A = alocarMatriz(Tamanho);
   int **B = alocarMatriz(Tamanho);
   int **C = alocarMatriz(Tamanho);
-  int **D = alocarMatriz(Tamanho);
 
-  srand(time(NULL)); /*Pego o horário do PC como base para gerar o números aleatórios*/
+  srand(time(NULL));
 
   /*Gera a matriz A e B que serão utilizadas no Método Tradicional e o Método de Strassen*/
   geraMatriz(A, Tamanho);
   geraMatriz(B, Tamanho);
-/*
-  printMatriz(A, Tamanho);
-  printMatriz(B, Tamanho);
-*/
 
   printf("_____________Método de Strassen_______________\n\n\n");
-  clock_t inicialStrassen = clock(); /*Pego o horário em que a função de multiplicação do método de Strassen é chamada*/
-  algoritmoDeStrassen(A,B,D,Tamanho); /*Chamo a função de multiplicação de Strassen*/
-  printf("demorou %li milésimos\n\n", clock() - inicialStrassen); /*Imprimo o tempo resultante*/
-/*  printMatriz(D, Tamanho);*/
+  
+  t_inicial = omp_get_wtime();
+  algoritmoDeStrassen(A,B,C,Tamanho); /*Chamo a função de multiplicação de Strassen*/
+  t_final = omp_get_wtime();
+
+  printf("Tempo de execução: %lf\n", t_final-t_inicial);
 
   /*Libero as matrizes restantes*/
   liberamemoria(A,Tamanho);
   liberamemoria(B,Tamanho);
   liberamemoria(C,Tamanho);
-  liberamemoria(D,Tamanho);
 
   return 0;
 }
@@ -73,16 +78,6 @@ void geraMatriz(int **M, int Tam){ /*Recebo o endereço da matriz que será gera
   }
 }
 
-void printMatriz(int **M, int Tam){ /*Recebo o endereço da matriz que será impressa.*/
-  int i, j;
-  for(i = 0; i<Tam; i++){
-    for(j = 0; j<Tam; j++){
-      printf("%d ", M[i][j]); /*Printa cada poisição a Matriz.*/
-    }
-    printf("\n");
-  }
-  printf("\n\n");
-}
 
 void soma(int **A, int **B, int **C, int Tam){ /*Recebo o endereço das 2 matrizes que serão somadas.*/
   int i,j;
