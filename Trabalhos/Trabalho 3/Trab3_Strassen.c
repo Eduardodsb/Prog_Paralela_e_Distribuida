@@ -1,8 +1,7 @@
 /*
 Compilar PGI: pgcc -mp -Minfo=all -o Trab3_Strassen Trab3_Strassen.c
 
-Executar: ./Trab3_Otimizado 2000 1000
-OBS: 2000 representa o tamanho da matriz quadrada e o 1000 Block Size.
+Executar: ./Trab3_Strassen 2000
 */
 
 #include<stdio.h>
@@ -135,17 +134,6 @@ void algoritmoDeStrassen(double **A, double **B, double **D, int Tam){ /*Recebo 
       M7[i] = (double*) malloc(sizeof(double)*newTam);
       aux1[i] = (double*) malloc(sizeof(double)*newTam);
       aux2[i] = (double*) malloc(sizeof(double)*newTam); 
-    }
-
-    /*Inicialização das matrizes*/
-    for(i=0; i<newTam; i++){
-        for(j=0; j<newTam; j++){
-            A11[i][j] = A12[i][j] = A21[i][j] = A22[i][j] = 0.0;
-            B11[i][j] = B12[i][j] = B21[i][j] = B22[i][j] = 0.0;
-            C11[i][j] = C12[i][j] = C21[i][j] = C22[i][j] = 0.0;
-            M1[i][j] = M2[i][j] = M3[i][j] = M4[i][j] = M5[i][j] = M6[i][j] = M7[i][j] = 0.0;
-            aux1[i][j] = aux2[i][j] = 0.0;
-        }
     }
 
     /*Gero cada um dos pedaços da Matriz A e da Matriz B*/

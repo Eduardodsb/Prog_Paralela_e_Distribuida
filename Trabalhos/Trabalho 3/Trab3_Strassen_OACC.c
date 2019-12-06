@@ -1,8 +1,7 @@
 /*
 Compilar PGI: pgcc -mp -Minfo=all -o Trab3_Strassen Trab3_Strassen.c
 
-Executar: ./Trab3_Otimizado 2000 1000
-OBS: 2000 representa o tamanho da matriz quadrada e o 1000 Block Size.
+Executar: ./Trab3_Strassen 2000
 */
 
 #include<stdio.h>
@@ -10,28 +9,37 @@ OBS: 2000 representa o tamanho da matriz quadrada e o 1000 Block Size.
 #include<omp.h>
 
 int** alocarMatriz(int Tam);
-void geraMatriz(int **M, int Tam);
-void printMatriz(int **M, int Tam);
-void multiplicarMatriz(int **A, int **B, int **C,int Tam);
-void soma(int **A, int **B, int **C, int Tam);
-void subtracao(int **A, int **B, int **C, int Tam);
-void algoritmoDeStrassen(int **A, int **B, int **D, int Tam);
-void liberamemoria(int **A, int Tam);
+void soma(double **A, double **B, double **C, int Tam);
+void subtracao(double **A, double **B, double **C, int Tam);
+void algoritmoDeStrassen(double **A, double **B, double **D, int Tam);
+void liberamemoria(double **A, int Tam);
 
 int main (int argc, char *argv[]){
-  int Tamanho = atoi(argv[1]);
+  int i, j;
+  double **A, **B, **C; 
   double t_final, t_inicial;
+  int Tamanho = atoi(argv[1]);
 
-  /*Aloco as Matrizes necessárias, onde A e B são meus operandos e C e D para guardar os resultados*/
-  int **A = alocarMatriz(Tamanho);
-  int **B = alocarMatriz(Tamanho);
-  int **C = alocarMatriz(Tamanho);
+    srand(time(NULL));
 
-  srand(time(NULL));
+  /*Alocação da Matrizes*/    
+  A = (double**) malloc(sizeof(double*)*Tamanho);
+  B = (double**) malloc(sizeof(double*)*Tamanho);
+  C = (double**) malloc(sizeof(double*)*Tamanho);
+  for(i=0; i<Tamanho; i++){
+    A[i] = (double*) malloc(sizeof(double)*Tamanho);
+    B[i] = (double*) malloc(sizeof(double)*Tamanho);
+    C[i] = (double*) malloc(sizeof(double)*Tamanho);
+  }
 
-  /*Gera a matriz A e B que serão utilizadas no Método Tradicional e o Método de Strassen*/
-  geraMatriz(A, Tamanho);
-  geraMatriz(B, Tamanho);
+  /*Inicialização das matrizes*/
+  for(i=0; i<Tamanho; i++){
+    for(j=0; j<Tamanho; j++){
+      A[i][j] = rand()%Tamanho;
+      B[i][j] = rand()%Tamanho;
+      C[i][j] = 0.0;
+    }
+  }
 
   printf("_____________Método de Strassen_______________\n\n\n");
   
@@ -41,45 +49,20 @@ int main (int argc, char *argv[]){
 
   printf("Tempo de execução: %lf\n", t_final-t_inicial);
 
-  /*Libero as matrizes restantes*/
-  liberamemoria(A,Tamanho);
-  liberamemoria(B,Tamanho);
-  liberamemoria(C,Tamanho);
+  /*Libera memória utilizada*/
+   for(i=0; i<Tamanho; i++){
+		free(A[i]);
+        free(B[i]);
+        free(C[i]);
+	}
+    free(A);
+    free(B);
+    free(C);
 
   return 0;
 }
 
-int** alocarMatriz(int Tam){ /*Recebe o tamanho de linhas e colunas da matriz*/
-  int i,j;
-  int **m = (int**)malloc(Tam * sizeof(int*)); /*Aloca um vetor de ponteiros*/
-  if(!m){ /*Verifico se a memória foi alocada para as linhas*/
-    printf("Erro: Nao foi possível alocar memória.\n");
-    exit(1);
-  }
-  for (i = 0; i < Tam; i++){
-       m[i] = (int*) malloc(Tam * sizeof(int)); /*Aloca um vetor de inteiros para cada posição do vetor de ponteiros.*/
-       if(!m[i]){ /*Verifico se a memória foi alocada para as colunas*/
-         printf("Erro: Nao foi possível alocar memória.\n");
-         exit(1);
-       }
-       for (j = 0; j < Tam; j++){
-            m[i][j] = 0; /*inicializa com 0.*/
-       }
-  }
-return m; /*Retorna o ponteiro para a matriz alocada*/
-}
-
-void geraMatriz(int **M, int Tam){ /*Recebo o endereço da matriz que será gerada*/
-  int i,j;
-  for(i = 0; i<Tam; i++){
-    for(j = 0; j<Tam; j++){
-      M[i][j]= rand()%100;/*Gera números aleatórios para cada posição da matriz.*/
-    }
-  }
-}
-
-
-void soma(int **A, int **B, int **C, int Tam){ /*Recebo o endereço das 2 matrizes que serão somadas.*/
+void soma(double **A, double **B, double **C, int Tam){ /*Recebo o endereço das 2 matrizes que serão somadas.*/
   int i,j;
   for(i=0; i<Tam; i++){
     for(j=0; j<Tam; j++){
@@ -88,7 +71,7 @@ void soma(int **A, int **B, int **C, int Tam){ /*Recebo o endereço das 2 matriz
   }
 }
 
-void subtracao(int **A, int **B, int **C, int Tam){ /*Recebo o endereço das 2 matrizes que serão subtraídas.*/
+void subtracao(double **A, double **B, double **C, int Tam){ /*Recebo o endereço das 2 matrizes que serão subtraídas.*/
   int i,j;
   for(i=0; i<Tam; i++){
     for(j=0; j<Tam; j++){
@@ -97,16 +80,9 @@ void subtracao(int **A, int **B, int **C, int Tam){ /*Recebo o endereço das 2 m
   }
 }
 
-void liberamemoria(int **A, int Tam){ /*Recebo o endereço da Matriz que será liberada da memória e o tamanho da mesma.*/
-	int i;
-	for(i=0; i<Tam; i++){
-		free(A[i]); /*Primeiro libero cada uma das colunas.*/
-	}
-	free(A); /*Aqui libero as linhas.*/
-}
-
-void algoritmoDeStrassen(int **A, int **B, int **D, int Tam){ /*Recebo endereço das 2 matrizes que serão multiplicadas pelo método de Strassen, o endereço da matriz que receberá o resultado e o tamanho*/
-
+void algoritmoDeStrassen(double **A, double **B, double **D, int Tam){ /*Recebo endereço das 2 matrizes que serão multiplicadas pelo método de Strassen, o endereço da matriz que receberá o resultado e o tamanho*/
+  double **A11, **A12, **A21, **A22, **B11, **B12, **B21, **B22, **C11, **C12, **C21, **C22,
+  **M1, **M2, **M3, **M4, **M5, **M6, **M7, **aux1, **aux2;
   int i, j;
   int newTam = Tam/2;
 
@@ -114,28 +90,51 @@ void algoritmoDeStrassen(int **A, int **B, int **D, int Tam){ /*Recebo endereço
       D[0][0] = A[0][0] * B[0][0];
       return;
     }
-
-    int **A11 = alocarMatriz(newTam);
-    int **A12 = alocarMatriz(newTam);
-    int **A21 = alocarMatriz(newTam);
-    int **A22 = alocarMatriz(newTam);
-    int **B11 = alocarMatriz(newTam);
-    int **B12 = alocarMatriz(newTam);
-    int **B21 = alocarMatriz(newTam);
-    int **B22 = alocarMatriz(newTam);
-	  int **C11 = alocarMatriz(newTam);
-	  int **C12 = alocarMatriz(newTam);
-	  int **C21 = alocarMatriz(newTam);
-	  int **C22 = alocarMatriz(newTam);
-    int **M1 = alocarMatriz(newTam);
-    int **M2 = alocarMatriz(newTam);
-    int **M3 = alocarMatriz(newTam);
-    int **M4 = alocarMatriz(newTam);
-    int **M5 = alocarMatriz(newTam);
-    int **M6 = alocarMatriz(newTam);
-    int **M7 = alocarMatriz(newTam);
-	  int **aux1 = alocarMatriz(newTam); /*aux1 e aux2 são usadas nos processos de soma e subtração, uma vez que preciso guardar tais endereços para serem liberados*/
-	  int **aux2 = alocarMatriz(newTam);
+    /*Alocação da Matrizes*/    
+    A11 = (double**) malloc(sizeof(double*)*newTam);
+    A12 = (double**) malloc(sizeof(double*)*newTam);
+    A21 = (double**) malloc(sizeof(double*)*newTam);
+    A22 = (double**) malloc(sizeof(double*)*newTam);
+    B11 = (double**) malloc(sizeof(double*)*newTam);
+    B12 = (double**) malloc(sizeof(double*)*newTam);
+    B21 = (double**) malloc(sizeof(double*)*newTam);
+    B22 = (double**) malloc(sizeof(double*)*newTam);
+    C11 = (double**) malloc(sizeof(double*)*newTam);
+    C12 = (double**) malloc(sizeof(double*)*newTam);
+    C21 = (double**) malloc(sizeof(double*)*newTam);
+    C22 = (double**) malloc(sizeof(double*)*newTam);
+    M1 = (double**) malloc(sizeof(double*)*newTam);
+    M2 = (double**) malloc(sizeof(double*)*newTam);
+    M3 = (double**) malloc(sizeof(double*)*newTam);
+    M4 = (double**) malloc(sizeof(double*)*newTam);
+    M5 = (double**) malloc(sizeof(double*)*newTam);
+    M6 = (double**) malloc(sizeof(double*)*newTam);
+    M7 = (double**) malloc(sizeof(double*)*newTam);
+    aux1 = (double**) malloc(sizeof(double*)*newTam);
+    aux2 = (double**) malloc(sizeof(double*)*newTam);
+    for(i=0; i<newTam; i++){
+      A11[i] = (double*) malloc(sizeof(double)*newTam);
+      A12[i] = (double*) malloc(sizeof(double)*newTam);
+      A21[i] = (double*) malloc(sizeof(double)*newTam);
+      A22[i] = (double*) malloc(sizeof(double)*newTam);
+      B11[i] = (double*) malloc(sizeof(double)*newTam);
+      B12[i] = (double*) malloc(sizeof(double)*newTam);
+      B21[i] = (double*) malloc(sizeof(double)*newTam);
+      B22[i] = (double*) malloc(sizeof(double)*newTam);
+      C11[i] = (double*) malloc(sizeof(double)*newTam);
+      C12[i] = (double*) malloc(sizeof(double)*newTam);
+      C21[i] = (double*) malloc(sizeof(double)*newTam);
+      C22[i] = (double*) malloc(sizeof(double)*newTam);
+      M1[i] = (double*) malloc(sizeof(double)*newTam);
+      M2[i] = (double*) malloc(sizeof(double)*newTam);
+      M3[i] = (double*) malloc(sizeof(double)*newTam);
+      M4[i] = (double*) malloc(sizeof(double)*newTam);
+      M5[i] = (double*) malloc(sizeof(double)*newTam);
+      M6[i] = (double*) malloc(sizeof(double)*newTam);
+      M7[i] = (double*) malloc(sizeof(double)*newTam);
+      aux1[i] = (double*) malloc(sizeof(double)*newTam);
+      aux2[i] = (double*) malloc(sizeof(double)*newTam); 
+    }
 
     /*Gero cada um dos pedaços da Matriz A e da Matriz B*/
     for(i = 0; i<newTam; i++){
@@ -198,27 +197,49 @@ void algoritmoDeStrassen(int **A, int **B, int **D, int Tam){ /*Recebo endereço
     }
   }
 
-  /*Libero memória*/
-  liberamemoria(aux1,newTam);
-  liberamemoria(aux2,newTam);
-  liberamemoria(A11,newTam);
-  liberamemoria(A21,newTam);
-  liberamemoria(A12,newTam);
-  liberamemoria(A22,newTam);
-  liberamemoria(B11,newTam);
-  liberamemoria(B21,newTam);
-  liberamemoria(B12,newTam);
-  liberamemoria(B22,newTam);
-  liberamemoria(C11,newTam);
-  liberamemoria(C21,newTam);
-  liberamemoria(C12,newTam);
-  liberamemoria(C22,newTam);
-  liberamemoria(M1,newTam);
-  liberamemoria(M2,newTam);
-  liberamemoria(M3,newTam);
-  liberamemoria(M4,newTam);
-  liberamemoria(M5,newTam);
-  liberamemoria(M6,newTam);
-  liberamemoria(M7,newTam);
-
+  /*Libera memória utilizada*/
+  for(i=0; i<newTam; i++){
+      free(A11[i]);
+      free(A12[i]);
+      free(A21[i]);
+      free(A22[i]);
+      free(B11[i]);
+      free(B12[i]);
+      free(B21[i]);
+      free(B22[i]);
+      free(C11[i]);
+      free(C12[i]);
+      free(C21[i]);
+      free(C22[i]);
+      free(M1[i]);
+      free(M2[i]);
+      free(M3[i]);
+      free(M4[i]);
+      free(M5[i]);
+      free(M6[i]);
+      free(M7[i]);
+      free(aux1[i]);
+      free(aux2[i]);
+}
+      free(A11);
+      free(A12);
+      free(A21);
+      free(A22);
+      free(B11);
+      free(B12);
+      free(B21);
+      free(B22);
+      free(C11);
+      free(C12);
+      free(C21);
+      free(C22);
+      free(M1);
+      free(M2);
+      free(M3);
+      free(M4);
+      free(M5);
+      free(M6);
+      free(M7);
+      free(aux1);
+      free(aux2);
 }

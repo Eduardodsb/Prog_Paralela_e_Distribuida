@@ -1,8 +1,7 @@
 /*
 Compilar PGI: pgcc -mp -Minfo=all -o Trab3_Strassen_OMP Trab3_Strassen_OMP.c
 
-Executar: ./Trab3_Otimizado 2000 1000
-OBS: 2000 representa o tamanho da matriz quadrada e o 1000 Block Size.
+Executar: ./Trab3_Strassen_OMP 2000
 */
 
 #include<stdio.h>
@@ -47,7 +46,13 @@ int main (int argc, char *argv[]){
   printf("_____________Método de Strassen_______________\n\n\n");
   
   t_inicial = omp_get_wtime();
-  algoritmoDeStrassen(A,B,C,Tamanho); /*Chamo a função de multiplicação de Strassen*/
+  #pragma omp parallel shared(A,B,C, Tamanho)
+  {
+    #pragma omp single
+    {
+        algoritmoDeStrassen(A,B,C,Tamanho); /*Chamo a função de multiplicação de Strassen*/
+    }
+  }
   t_final = omp_get_wtime();
 
   printf("Tempo de execução: %lf\n", t_final-t_inicial);
@@ -67,7 +72,8 @@ int main (int argc, char *argv[]){
 
 void soma(double **A, double **B, double **C, int Tam){ /*Recebo o endereço das 2 matrizes que serão somadas.*/
   int i,j;
-  #pragma omp parallel for schedule(static)
+  //#pragma omp parallel for shared(C,A,B,Tam) private(i,j) schedule(static)
+  //#pragma omp taskloop
   for(i=0; i<Tam; i++){
     for(j=0; j<Tam; j++){
       C[i][j] = A[i][j]+B[i][j]; /*Faço a soma de cada posição das matrizes.*/
@@ -77,7 +83,8 @@ void soma(double **A, double **B, double **C, int Tam){ /*Recebo o endereço das
 
 void subtracao(double **A, double **B, double **C, int Tam){ /*Recebo o endereço das 2 matrizes que serão subtraídas.*/
   int i,j;
-  #pragma omp parallel for schedule(static)
+  //#pragma omp parallel for shared(C,A,B,Tam) private(i,j) schedule(static)
+  //#pragma omp taskloop
   for(i=0; i<Tam; i++){
     for(j=0; j<Tam; j++){
       C[i][j] = A[i][j]-B[i][j]; /*Faço a subtração de cada posição das matrizes.*/
@@ -87,7 +94,7 @@ void subtracao(double **A, double **B, double **C, int Tam){ /*Recebo o endereç
 
 void algoritmoDeStrassen(double **A, double **B, double **D, int Tam){ /*Recebo endereço das 2 matrizes que serão multiplicadas pelo método de Strassen, o endereço da matriz que receberá o resultado e o tamanho*/
   double **A11, **A12, **A21, **A22, **B11, **B12, **B21, **B22, **C11, **C12, **C21, **C22,
-  **M1, **M2, **M3, **M4, **M5, **M6, **M7, **aux1, **aux2;
+  **M1, **M2, **M3, **M4, **M5, **M6, **M7, **aux1, **aux2, **aux3, **aux4, **aux5, **aux6, **aux7, **aux8, **aux9, **aux10;
   int i, j;
   int newTam = Tam/2;
 
@@ -117,7 +124,15 @@ void algoritmoDeStrassen(double **A, double **B, double **D, int Tam){ /*Recebo 
     M7 = (double**) malloc(sizeof(double*)*newTam);
     aux1 = (double**) malloc(sizeof(double*)*newTam);
     aux2 = (double**) malloc(sizeof(double*)*newTam);
-    #pragma omp parallel for schedule(static)
+    aux3 = (double**) malloc(sizeof(double*)*newTam);
+    aux4 = (double**) malloc(sizeof(double*)*newTam);
+    aux5 = (double**) malloc(sizeof(double*)*newTam);
+    aux6 = (double**) malloc(sizeof(double*)*newTam);
+    aux7 = (double**) malloc(sizeof(double*)*newTam);
+    aux8 = (double**) malloc(sizeof(double*)*newTam);
+    aux9 = (double**) malloc(sizeof(double*)*newTam);
+    aux10 = (double**) malloc(sizeof(double*)*newTam);
+    //#pragma omp parallel for shared(A11, A12, A21, A22, B11, B12, B21, B22, C11, C12, C21, C22, M1, M2, M3, M4, M5, M6, M7, aux1, aux2, newTam) schedule(static)
     for(i=0; i<newTam; i++){
       A11[i] = (double*) malloc(sizeof(double)*newTam);
       A12[i] = (double*) malloc(sizeof(double)*newTam);
@@ -140,21 +155,18 @@ void algoritmoDeStrassen(double **A, double **B, double **D, int Tam){ /*Recebo 
       M7[i] = (double*) malloc(sizeof(double)*newTam);
       aux1[i] = (double*) malloc(sizeof(double)*newTam);
       aux2[i] = (double*) malloc(sizeof(double)*newTam); 
-    }
-
-    /*Inicialização das matrizes*/
-    for(i=0; i<newTam; i++){
-        for(j=0; j<newTam; j++){
-            A11[i][j] = A12[i][j] = A21[i][j] = A22[i][j] = 0.0;
-            B11[i][j] = B12[i][j] = B21[i][j] = B22[i][j] = 0.0;
-            C11[i][j] = C12[i][j] = C21[i][j] = C22[i][j] = 0.0;
-            M1[i][j] = M2[i][j] = M3[i][j] = M4[i][j] = M5[i][j] = M6[i][j] = M7[i][j] = 0.0;
-            aux1[i][j] = aux2[i][j] = 0.0;
-        }
+      aux3[i] = (double*) malloc(sizeof(double)*newTam); 
+      aux4[i] = (double*) malloc(sizeof(double)*newTam);
+      aux5[i] = (double*) malloc(sizeof(double)*newTam); 
+      aux6[i] = (double*) malloc(sizeof(double)*newTam); 
+      aux7[i] = (double*) malloc(sizeof(double)*newTam); 
+      aux8[i] = (double*) malloc(sizeof(double)*newTam); 
+      aux9[i] = (double*) malloc(sizeof(double)*newTam); 
+      aux10[i] = (double*) malloc(sizeof(double)*newTam);  
     }
 
     /*Gero cada um dos pedaços da Matriz A e da Matriz B*/
-    #pragma omp parallel for schedule(static)
+    //#pragma omp parallel for shared(A11, A12, A21, A22, B11, B12, B21, B22, A, B, newTam) private(i, j) schedule(static)
     for(i = 0; i<newTam; i++){
       for(j = 0; j<newTam; j++){
         A11[i][j] = A[i][j];
@@ -169,29 +181,52 @@ void algoritmoDeStrassen(double **A, double **B, double **D, int Tam){ /*Recebo 
       }
     }
 
+  #pragma omp task
+  {
   soma(A11,A22,aux1,newTam);
   soma(B11,B22,aux2,newTam);
   algoritmoDeStrassen(aux1,aux2,M1,newTam); /*M1 = (A[0][0] + A[1][1])*(B[0][0] + B[1][1]);*/
+  }
 
-  soma(A21,A22,aux1,newTam);
-  algoritmoDeStrassen(aux1,B11,M2,newTam); /* M2 = (A[1][0] + A[1][1])*B[0][0];*/
+  #pragma omp task
+  {
+  soma(A21,A22,aux3,newTam);
+  algoritmoDeStrassen(aux3,B11,M2,newTam); /* M2 = (A[1][0] + A[1][1])*B[0][0];*/
+  }
 
-  subtracao(B12,B22,aux1,newTam);
-  algoritmoDeStrassen(A11,aux1,M3,newTam); /*M3 = A[0][0]*(B[0][1] - B[1][1]);*/
+  #pragma omp task
+  {
+  subtracao(B12,B22,aux4,newTam);
+  algoritmoDeStrassen(A11,aux4,M3,newTam); /*M3 = A[0][0]*(B[0][1] - B[1][1]);*/
+  }
+  
+  #pragma omp task
+  {
+  subtracao(B21,B11,aux5,newTam);
+  algoritmoDeStrassen(A22,aux5,M4,newTam); /*M4 = A[1][1]*(B[1][0]-B[0][0]);*/
+  }
 
-  subtracao(B21,B11,aux1,newTam);
-  algoritmoDeStrassen(A22,aux1,M4,newTam); /*M4 = A[1][1]*(B[1][0]-B[0][0]);*/
+  #pragma omp task
+  {
+  soma(A11,A12,aux6,newTam);
+  algoritmoDeStrassen(aux6,B22,M5,newTam); /*M5 = (A[0][0] + A[0][1])*B[1][1];*/
+  }
 
-  soma(A11,A12,aux1,newTam);
-  algoritmoDeStrassen(aux1,B22,M5,newTam); /*M5 = (A[0][0] + A[0][1])*B[1][1];*/
+  #pragma omp task
+  {
+  subtracao(A21,A11,aux7,newTam);
+  soma(B11,B12,aux8,newTam);
+  algoritmoDeStrassen(aux7,aux8,M6,newTam); /*M6 = (A[1][0] - A[0][0])*(B[0][0] + B[0][1]);*/
+  }
 
-  subtracao(A21,A11,aux1,newTam);
-  soma(B11,B12,aux2,newTam);
-  algoritmoDeStrassen(aux1,aux2,M6,newTam); /*M6 = (A[1][0] - A[0][0])*(B[0][0] + B[0][1]);*/
+  #pragma omp task
+  {
+  subtracao(A12,A22,aux9,newTam);
+  soma(B21,B22,aux10,newTam);
+  algoritmoDeStrassen(aux9,aux10,M7,newTam); /*M7 = (A[0][1] - A[1][1])*(B[1][0] + B[1][1]);*/
+  }
 
-  subtracao(A12,A22,aux1,newTam);
-  soma(B21,B22,aux2,newTam);
-  algoritmoDeStrassen(aux1,aux2,M7,newTam); /*M7 = (A[0][1] - A[1][1])*(B[1][0] + B[1][1]);*/
+  #pragma omp taskwait
 
   soma(M1,M4,aux1,newTam);
   soma(aux1,M7,aux2,newTam);
@@ -201,9 +236,9 @@ void algoritmoDeStrassen(double **A, double **B, double **D, int Tam){ /*Recebo 
 
   soma(M3,M5,C12,newTam); /*C12 = M3 + M5*/
 
-  soma(M1,M3,aux1,newTam);
-  soma(aux1,M6,aux2,newTam);
-  subtracao(aux2,M2,C22,newTam);  /*C22 = M1+M3+M6-M2*/
+  soma(M1,M3,aux3,newTam);
+  soma(aux3,M6,aux4,newTam);
+  subtracao(aux4,M2,C22,newTam);  /*C22 = M1+M3+M6-M2*/
 
   /*Montagem do Resultado apartir dos C's*/
   for(i = 0; i<newTam; i++){
@@ -216,7 +251,7 @@ void algoritmoDeStrassen(double **A, double **B, double **D, int Tam){ /*Recebo 
   }
 
   /*Libera memória utilizada*/
-  #pragma omp parallel for schedule(static)
+  //#pragma omp parallel for shared(A11, A12, A21, A22, B11, B12, B21, B22, C11, C12, C21, C22, M1, M2, M3, M4, M5, M6, M7, aux1, aux2, newTam) schedule(static)
   for(i=0; i<newTam; i++){
       free(A11[i]);
       free(A12[i]);
@@ -239,6 +274,14 @@ void algoritmoDeStrassen(double **A, double **B, double **D, int Tam){ /*Recebo 
       free(M7[i]);
       free(aux1[i]);
       free(aux2[i]);
+      free(aux3[i]);
+      free(aux4[i]);
+      free(aux5[i]);
+      free(aux6[i]);
+      free(aux7[i]);
+      free(aux8[i]);
+      free(aux9[i]);
+      free(aux10[i]);
 }
       free(A11);
       free(A12);
@@ -261,4 +304,12 @@ void algoritmoDeStrassen(double **A, double **B, double **D, int Tam){ /*Recebo 
       free(M7);
       free(aux1);
       free(aux2);
+      free(aux3);
+      free(aux4);
+      free(aux5);
+      free(aux6);
+      free(aux7);
+      free(aux8);
+      free(aux9);
+      free(aux10);
 }
