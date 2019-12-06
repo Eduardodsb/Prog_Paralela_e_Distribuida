@@ -1,7 +1,7 @@
 /*
-Compilar PGI: pgcc -mp -Minfo=all -o Trab3_Strassen Trab3_Strassen.c
+Compilar PGI: pgcc -acc -ta=nvidia -Minfo=all -o Trab3_Strassen_OACC Trab3_Strassen_OACC.c
 
-Executar: ./Trab3_Strassen 2000
+Executar: ./Trab3_Strassen_OACC 2000
 */
 
 #include<stdio.h>
@@ -64,15 +64,19 @@ int main (int argc, char *argv[]){
 
 void soma(double **A, double **B, double **C, int Tam){ /*Recebo o endereço das 2 matrizes que serão somadas.*/
   int i,j;
+
+  //#pragma acc parallel loop
   for(i=0; i<Tam; i++){
     for(j=0; j<Tam; j++){
       C[i][j] = A[i][j]+B[i][j]; /*Faço a soma de cada posição das matrizes.*/
     }
   }
+
 }
 
 void subtracao(double **A, double **B, double **C, int Tam){ /*Recebo o endereço das 2 matrizes que serão subtraídas.*/
   int i,j;
+  //#pragma acc parallel loop collapse(2)
   for(i=0; i<Tam; i++){
     for(j=0; j<Tam; j++){
       C[i][j] = A[i][j]-B[i][j]; /*Faço a subtração de cada posição das matrizes.*/
@@ -136,7 +140,11 @@ void algoritmoDeStrassen(double **A, double **B, double **D, int Tam){ /*Recebo 
       aux2[i] = (double*) malloc(sizeof(double)*newTam); 
     }
 
+ // #pragma acc data copyin(A,B,newTam) copyout(A11,A12,A21,A22,B11,B12,B21,B22)
+  //{
     /*Gero cada um dos pedaços da Matriz A e da Matriz B*/
+    //#pragma acc kernels
+    #pragma acc parallel loop collapse(2)
     for(i = 0; i<newTam; i++){
       for(j = 0; j<newTam; j++){
         A11[i][j] = A[i][j];
@@ -150,6 +158,7 @@ void algoritmoDeStrassen(double **A, double **B, double **D, int Tam){ /*Recebo 
         B22[i][j] = B[newTam+i][newTam+j];
       }
     }
+  //}
 
   soma(A11,A22,aux1,newTam);
   soma(B11,B22,aux2,newTam);
@@ -188,6 +197,7 @@ void algoritmoDeStrassen(double **A, double **B, double **D, int Tam){ /*Recebo 
   subtracao(aux2,M2,C22,newTam);  /*C22 = M1+M3+M6-M2*/
 
   /*Montagem do Resultado apartir dos C's*/
+  //#pragma acc kernels
   for(i = 0; i<newTam; i++){
     for(j = 0; j<newTam; j++){
         D[i][j] = C11[i][j];
