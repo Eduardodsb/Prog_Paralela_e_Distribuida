@@ -10,13 +10,13 @@ Trabalhos realizados na disciplina de Programação Paralela e Distribuida em 20
 
 #### comando para instalar o OpenMPI:<br>
 ```
-$ sudo apt-get install openmpi-bin<br>
-$ sudo apt-get install openmpi-doc<br>
-$ sudo apt-get install libopenmpi-dev<br>
+$ sudo apt-get install openmpi-bin
+$ sudo apt-get install openmpi-doc
+$ sudo apt-get install libopenmpi-dev
 ```
 #### comando para compilar e executar:<br>
 ```
-$ mpicc -o CodName CodName.c <br>
+$ mpicc -o CodName CodName.c 
 $ mpirun -np 4 ./CodName
 ```
 obs: 4 representa o número de threads
@@ -35,6 +35,16 @@ https://www.microsoft.com/en-us/download/details.aspx?id=57467
 
 #### comando para compilar e executar:<br>
 ```
-$ gcc -o CodName CodName.c -fopenmp <br>
+$ gcc -o CodName CodName.c -fopenmp 
+$ pgcc -mp -Minfo=all -o cods cods.c 
+$ ./CodName
+```
+
+## OpenACC - Requisítos necessários
+
+#### comando para compilar e executar:<br>
+```
+$ gcc -o CodName CodName.c -fopenacc
+$ pgcc -acc -ta=nvidia -Minfo=all -o cods cods.c
 $ ./CodName
 ```
